@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+ <meta charset="utf-8">
+ <meta http-equiv="x-ua-compatible" content="ie=edge">
+ <meta name="description" content="">
+ <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ <title>djello</title>
+ <style>
+ body {
+  font-family: 'helvetica neue', sans-serif;
+  color: white;
+  background-color: rgb(0, 121, 191);
+ }
+ .board {
+  display: flex;
+ }
+ .column {
+  color: #4d4d4d;
+  width: 270px;
+  background-color: #E2E4E6;
+  border-radius: 3px;
+  padding: 10px;
+  margin-right: 10px;
+ }
+ .column > h3 {
+  margin: 0 0 10px 0;
+ }
+ .card {
+  background-color: white;
+  border-radius: 3px;
+  padding: 8px;
+  margin-bottom: 8px;
+ }
+ </style>
+</head>
+<body>
+	<h1>Djello</h1>
+
+ {% for board in boards %}
+ <h2>{{ board.name }}</h2>
+ <div class="board">
+
+  {% for column in board.columns.all %}
+  <div class="column">
+   <h3>{{ column.title }}</h3>
+
+   {% for card in column.cards.all %}
+   <div class="card">{{ card.title }}</div>
+   {% endfor %}
+  </div>
+  {% endfor %}
+ </div>
+ {% empty %}
+ <p><em>No boards created yet!</em></p>
+ {% endfor %}
+
+</body>
+</html>
