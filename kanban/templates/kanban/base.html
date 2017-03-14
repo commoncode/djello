@@ -6,6 +6,7 @@
  <meta name="description" content="">
  <meta name="viewport" content="width=device-width, initial-scale=1.0">
  <title>djello</title>
+ <script src="//bensmithett.github.io/dragster/lib/dragster.js"></script>
  <style>
  body {
   font-family: 'helvetica neue', sans-serif;
@@ -27,10 +28,19 @@
   margin: 0 0 10px 0;
  }
  .card {
+  display: block;
   background-color: white;
   border-radius: 3px;
   padding: 8px;
   margin-bottom: 8px;
+  cursor: -webkit-grab;
+ }
+ .moving-card {
+  cursor: -webkit-grabbing;
+  transform: rotate(1deg);
+ }
+ .column.dropme {
+  background-color: #a9a9a9;
  }
  </style>
 </head>
@@ -42,11 +52,11 @@
  <div class="board">
 
   {% for column in board.columns.all %}
-  <div class="column">
+  <div class="column" data-column-id="{{ column.id }}">
    <h3>{{ column.title }}</h3>
 
    {% for card in column.cards.all %}
-   <div class="card">{{ card.title }}</div>
+   <a class="card" draggable="true" data-card-id="{{ card.id }}">{{ card.title }}</a>
    {% endfor %}
   </div>
   {% endfor %}
@@ -54,6 +64,64 @@
  {% empty %}
  <p><em>No boards created yet!</em></p>
  {% endfor %}
+
+ <script>
+  function parse_cookies() {
+   var cookies = {};
+   if (document.cookie && document.cookie !== '') {
+    document.cookie.split(';').forEach(function (c) {
+     var m = c.trim().match(/(\w+)=(.*)/);
+     if(m !== undefined) {
+      cookies[m[1]] = decodeURIComponent(m[2]);
+     }
+    });
+   }
+   return cookies;
+  }
+  const cookies = parse_cookies();
+
+  for (card of document.getElementsByClassName('card')) {
+   card.addEventListener('dragstart', e => {
+    e.dataTransfer.setData('Text', e.currentTarget.dataset.cardId);
+   });
+  }
+
+  for (element of document.getElementsByClassName('column')) {
+   new Dragster(element);
+   element.addEventListener('dragover', e => {
+    if (e.preventDefault) e.preventDefault();
+   });
+   element.addEventListener('dragster:enter', e => {
+    e.currentTarget.classList.add('dropme')
+   });
+   element.addEventListener('dragster:leave', e => {
+    e.currentTarget.classList.remove('dropme')
+   });
+   element.addEventListener('drop', e => {
+    e.currentTarget.classList.remove('dropme')
+    const postData = JSON.stringify({
+     'column_id': e.currentTarget.dataset.columnId,
+     'card_id': e.dataTransfer.getData('Text'),
+    });
+
+    fetch('/drop/', {
+     credentials: 'same-origin',
+     method: 'post',
+     headers: {
+      'X-CSRFToken': cookies['csrftoken'],
+     },
+     body: postData,
+    }).then(response => {
+     if (response.ok) {
+      window.location = '/';
+     } else {
+      alert('Error! ' + response.statusText);
+     }
+    });
+
+   });
+  }
+ </script>
 
 </body>
 </html>
