@@ -8,6 +8,9 @@
  <title>djello</title>
  <script src="//bensmithett.github.io/dragster/lib/dragster.js"></script>
  <style>
+ .no-display {
+  display: none !important;
+ }
  body {
   font-family: 'helvetica neue', sans-serif;
   color: white;
@@ -27,13 +30,36 @@
  .column > h3 {
   margin: 0 0 10px 0;
  }
- .card {
+ .card, .new-card {
   display: block;
   background-color: white;
   border-radius: 3px;
   padding: 8px;
   margin-bottom: 8px;
+ }
+ .card {
   cursor: -webkit-grab;
+ }
+ .new-card {
+  border: none;
+  resize: none;
+  width: 100%;
+  box-sizing: border-box;
+ }
+ .show-new-card {
+  color: #8c8c8c;
+  font-size: 14px;
+  background: none;
+  border: none;
+  display: block;
+  text-align: left;
+  cursor: pointer;
+  width: 100%;
+ }
+ .show-new-card:hover {
+  color: #4d4d4d;
+  background-color: #cdd2d4;
+  text-decoration: underline;
  }
  .moving-card {
   cursor: -webkit-grabbing;
@@ -58,6 +84,13 @@
    {% for card in column.cards.all %}
    <a class="card" draggable="true" data-card-id="{{ card.id }}">{{ card.title }}</a>
    {% endfor %}
+
+   <form action="/new-card/" method="POST">
+    {% csrf_token %}
+    <input type="hidden" name="column_id" value="{{ column.id }}" />
+    <input type="text" name="title" class="new-card no-display" data-column-id="{{ column.id }}" />
+   </form>
+   <button class="show-new-card" data-column-id="{{ column.id }}">Add a card…</button>
   </div>
   {% endfor %}
  </div>
@@ -79,6 +112,15 @@
    return cookies;
   }
   const cookies = parse_cookies();
+
+  for (button of document.getElementsByClassName('show-new-card')) {
+   button.addEventListener('click', e => {
+    const newCard = document.querySelector('.new-card[data-column-id="' + e.currentTarget.dataset.columnId + '"]');
+    newCard.classList.remove('no-display');
+    e.currentTarget.classList.add('no-display');
+    newCard.focus();
+   });
+  }
 
   for (card of document.getElementsByClassName('card')) {
    card.addEventListener('dragstart', e => {

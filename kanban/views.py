@@ -1,7 +1,7 @@
 import json
 
 from django.http import HttpResponse
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 from django.views.decorators.csrf import ensure_csrf_cookie
 
 from .models import Board, Card, Column
@@ -12,6 +12,14 @@ def index(request):
     return render(request, template_name='kanban/base.html', context={
         'boards': Board.objects.all(),
     })
+
+
+def new_card(request):
+    column_id = int(request.POST.get('column_id'))
+    title = request.POST.get('title')
+    assert title and column_id
+    Card.objects.create(title=title, column_id=column_id)
+    return redirect('/')
 
 
 def drop(request):
