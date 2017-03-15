@@ -22,6 +22,13 @@ def new_card(request):
     return redirect('/')
 
 
+def view_card(request, card_id, card_slug):
+    return render(request, template_name='kanban/view.html', context={
+        'boards': Board.objects.all(),
+        'current_card': Card.objects.get(id=card_id),
+    })
+
+
 def drop(request):
     payload = json.loads(request.body)
     card_id = int(payload.get('card_id'))

@@ -11,6 +11,9 @@
  .no-display {
   display: none !important;
  }
+ button {
+  cursor: pointer;
+ }
  body {
   font-family: 'helvetica neue', sans-serif;
   color: white;
@@ -38,7 +41,8 @@
   margin-bottom: 8px;
  }
  .card {
-  cursor: -webkit-grab;
+  color: inherit;
+  text-decoration: inherit;
  }
  .new-card {
   border: none;
@@ -71,7 +75,9 @@
  </style>
 </head>
 <body>
-	<h1>Djello</h1>
+ {% block content %}{% endblock %}
+
+ <h1>Djello</h1>
 
  {% for board in boards %}
  <h2>{{ board.name }}</h2>
@@ -82,7 +88,7 @@
    <h3>{{ column.title }}</h3>
 
    {% for card in column.cards.all %}
-   <a class="card" draggable="true" data-card-id="{{ card.id }}">{{ card.title }}</a>
+   <a class="card" draggable="true" data-card-id="{{ card.id }}" href="/cards/{{ card.id }}/{{ card.slug }}/">{{ card.title }}</a>
    {% endfor %}
 
    <form action="/new-card/" method="POST">

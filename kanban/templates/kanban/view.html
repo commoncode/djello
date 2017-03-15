@@ -1,0 +1,52 @@
+{% extends 'kanban/base.html' %}
+
+{% block content %}
+ <style>
+  .mask {
+   position: absolute;
+   top: 0;
+   right: 0;
+   bottom: 0;
+   left: 0;
+   background-color: rgba(0,0,0,0.6);
+   display: flex;
+   flex-direction: column;
+   align-items: center;
+   padding-top: 50px;
+  }
+  .card-detail {
+   position: absolute;
+   width: 730px;
+   height: 300px;
+   background-color: #edeff0;
+   color: #4d4d4d;
+   font-size: 18px;
+   font-weight: bold;
+   border-radius: 3px;
+   padding: 16px 50px;
+   box-sizing: border-box;
+  }
+  .card-header {
+   display: flex;
+   justify-content: space-between;
+  }
+  .card-header > a {
+   background: none;
+   border: none;
+   color: #777;
+   font-size: 20px;
+   text-decoration: none;
+  }
+  .card-header > a:hover {
+   color: #444;
+  }
+ </style>
+ <div class="mask">
+  <div class="card-detail">
+   <div class="card-header">
+    <div>{{ current_card.title }}</div>
+    <a href="/">✕</a>
+   </div>
+  </div>
+ </div>
+{% endblock %}
